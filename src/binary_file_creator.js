@@ -45,11 +45,7 @@ module.exports = class Binary_File_Creator
         switch(dataType)
         {
             case "bom":
-                console.log("Binary_File_Creator: TODO: " + dataType);
-                /*
-                result = [this.file.read("u8"), this.file.read("u8")];
-                this.file.setEndian((result[0] == 0xFE) ? "big" : "little");
-                */
+                this.file.write("u16", 0xFEFF, offset);
             break;
 
             case "string":
