@@ -7,23 +7,25 @@
 const fs = require('fs');
 var int24 = require('int24');
 
+const DEFAULT_BUFFER_SIZE = (1024 * 1024) * 10; // 10MB
+const BUFFER_SIZE_INCREMENT = (1024 * 1024) * 1; // 1MB
+
 module.exports = class Binary_File
 {
-    constructor(filePathOrBuffer = null)
+    constructor(filePathOrBuffer = null, defaultSize = DEFAULT_BUFFER_SIZE)
     {
         let isBuffer = filePathOrBuffer == null || (filePathOrBuffer instanceof Buffer);
 
         // constants
         this.ENDIAN_LITTLE = 0;
         this.ENDIAN_BIG    = 1;
-        this.BUFFER_DEF_SIZE = (1024 * 1024) * 10; // 10MB
 
         // file settings
         this.filePath = isBuffer ? null : filePathOrBuffer;
 
         if(filePathOrBuffer == null)
         {
-            this.buffer = Buffer.alloc(this.BUFFER_DEF_SIZE);
+            this.buffer = Buffer.alloc(defaultSize);
             this.maxOffset = 0;
         }else{
             this.buffer = isBuffer ? filePathOrBuffer : fs.readFileSync(filePathOrBuffer);
@@ -257,15 +259,13 @@ module.exports = class Binary_File
     {
         let pos = offset < 0 ? this.offset : offset;
 
-        if(pos >= this.buffer.length) {
-            console.log("PEOF: " + pos);
-            console.warn("@TODO: reallocate new buffer");
-            return 0;
-        }
-
         let typeObj = this.types[type];
         if(typeObj == null)
             return null;
+
+        if((pos + typeObj.size) >= this.buffer.length) {
+            this.resizeBuffer(this.buffer.length + BUFFER_SIZE_INCREMENT);
+        }
 
         let bytesWritten = typeObj.write[this.endian].call(this.buffer, value, pos);
 
@@ -294,6 +294,13 @@ module.exports = class Binary_File
             this.write("u8", val, offset < 0 ? -1 : (offset+i));
             ++i;
         }
+    }
+
+    resizeBuffer(newSize)
+    {
+        const newBuffer = Buffer.alloc(newSize);
+        this.buffer.copy(newBuffer);
+        this.buffer = newBuffer;
     }
 
 };
