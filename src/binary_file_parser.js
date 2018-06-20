@@ -24,7 +24,15 @@ module.exports = class Binary_File_Parser
             return 0;
 
         if(typeof(value) == "string")
-            return (value == "@offset") ? offset : parseInt(data[value]);
+        {
+            return (value == "@offset") ? 
+            offset : 
+            parseInt(
+                data[value] === undefined ? 
+                data.__parent[value] : 
+                data[value]
+            );
+        }
 
         return parseInt(value);
     }
@@ -70,7 +78,7 @@ module.exports = class Binary_File_Parser
                 if(typeof(info.structure) == "string")
                     info.structure = requireGlobal(info.structure);
 
-                result = this.parse(info.structure);
+                result = this.parse(info.structure, data);
             break;
 
             case "buffer":
@@ -120,9 +128,11 @@ module.exports = class Binary_File_Parser
         this.functions[name] = fc;
     }
 
-    parse(fileStruct)
+    parse(fileStruct, parentData = {})
     {
-        let data = {};
+        let data = {
+            __parent: parentData
+        };
 
         for(let name in fileStruct)
         {
@@ -165,6 +175,7 @@ module.exports = class Binary_File_Parser
                 this.pos(currentOffset);
         }
 
+        delete data.__parent;
         return data;
     }
 };
