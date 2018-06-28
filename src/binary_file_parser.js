@@ -178,4 +178,14 @@ module.exports = class Binary_File_Parser
         delete data.__parent;
         return data;
     }
+
+    /**
+     * clears the buffered file
+     * NOTE: if you still have a reference on it, it won't be GC
+     * @param {boolean} fillOldWithZero fill old buffer with zeros, usefull to check if you still use it anywhere
+     */
+    clearBuffer(fillOldWithZero = false)
+    {
+        this.file.clear(fillOldWithZero);
+    }
 };

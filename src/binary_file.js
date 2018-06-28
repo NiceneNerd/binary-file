@@ -303,4 +303,13 @@ module.exports = class Binary_File
         this.buffer = newBuffer;
     }
 
+    clear(fillOldWithZero = false)
+    {
+        if(fillOldWithZero && this.buffer)
+        {
+            this.buffer.fill(0);
+        }
+
+        this.buffer = Buffer.alloc(0);
+    }
 };
