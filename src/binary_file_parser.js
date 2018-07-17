@@ -97,6 +97,7 @@ module.exports = class Binary_File_Parser
                     console.error("Binary_File_Parser OOB: pos: " + realOffset + " @offset " + offset);
                     console.log(info);
                     console.log(data);
+                    throw "Binary_File_Parser: OOB!";
                 }
 
                 if(info.addValue != null && (info.addValue != "@offset" || value != 0)) {
