@@ -12,6 +12,6 @@
   },
   "dependencies": {
     "int24": "0.0.1",
-    "yaz0-lib": "gitlab:ice-spear-tools/yaz0-lib"
+    "yaz0-lib": "NiceneNerd/yaz0-lib"
   }
 }
